@@ -5,7 +5,7 @@
 
 class kafkaToBronzeTestSuite():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
+        self.base_data_dir = "/FileStore/tables/boot_camp"
      
     def cleanTests(self):
         print(f"Starting Cleanup...", end='')

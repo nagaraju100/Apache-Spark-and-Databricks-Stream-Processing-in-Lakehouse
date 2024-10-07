@@ -5,7 +5,7 @@
 
 class AggregationTestSuite():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
+        self.base_data_dir = "/FileStore/tables/boot_camp"
 
     def cleanTests(self):
         print(f"Starting Cleanup...", end='')
@@ -29,12 +29,16 @@ class AggregationTestSuite():
     def assertBronze(self, expected_count):
         print(f"\tStarting Bronze validation...", end='')
         actual_count = spark.sql("select count(*) from invoices_bz").collect()[0][0]
+        print("actual_count:",actual_count)
+        print("expected_count:",expected_count)
         assert expected_count == actual_count, f"Test failed! actual count is {actual_count}"
         print("Done")
 
     def assertGold(self, expected_value):
         print(f"\tStarting Gold validation...", end='')
         actual_value = spark.sql("select TotalAmount from customer_rewards where CustomerCardNo = '2262471989'").collect()[0][0]
+        print("actual_count:",actual_value)
+        print("expected_count:",expected_value)
         assert expected_value == actual_value, f"Test failed! actual value is {actual_value}"
         print("Done")
 

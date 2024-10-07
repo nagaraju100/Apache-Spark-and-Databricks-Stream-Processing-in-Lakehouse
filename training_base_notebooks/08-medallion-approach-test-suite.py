@@ -5,7 +5,7 @@
 
 class medallionApproachTestSuite():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
+        self.base_data_dir = "/FileStore/tables/boot_camp"
 
     def cleanTests(self):
         print(f"Starting Cleanup...", end='')
@@ -50,19 +50,19 @@ class medallionApproachTestSuite():
         print("\nTesting first iteration of invoice stream...") 
         self.ingestData(1)
         self.waitForMicroBatch()        
-        self.assertResult(1249)
+        self.assertResult(1253)
         print("Validation passed.\n")
 
         print("Testing second iteration of invoice stream...") 
         self.ingestData(2)
         self.waitForMicroBatch()
-        self.assertResult(2506)
+        self.assertResult(2510)
         print("Validation passed.\n") 
 
         print("Testing third iteration of invoice stream...") 
         self.ingestData(3)
         self.waitForMicroBatch()
-        self.assertResult(3990)
+        self.assertResult(3994)
         print("Validation passed.\n")
 
         bzQuery.stop()

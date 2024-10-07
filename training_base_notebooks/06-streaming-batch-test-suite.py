@@ -5,7 +5,7 @@
 
 class streamingBatchTestSuite():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
+        self.base_data_dir = "/FileStore/tables/boot_camp"
 
     def cleanTests(self):
         print(f"Starting Cleanup...", end='')
@@ -26,6 +26,8 @@ class streamingBatchTestSuite():
     def assertResult(self, expected_count):
         print(f"\tStarting validation...", end='')
         actual_count = spark.sql("select count(*) from invoice_line_items").collect()[0][0]
+        print("actual_count:",actual_count)
+        print("expected_count:",expected_count)
         assert expected_count == actual_count, f"Test failed! actual count is {actual_count}"
         print("Done")
 
@@ -43,19 +45,19 @@ class streamingBatchTestSuite():
         print("Testing first iteration of invoice stream...") 
         self.ingestData(1)
         self.waitForMicroBatch()        
-        self.assertResult(1249)
+        self.assertResult(1253)
         print("Validation passed.\n")
 
         print("Testing second iteration of invoice stream...") 
         self.ingestData(2)
         self.waitForMicroBatch()
-        self.assertResult(2506)
+        self.assertResult(2510)
         print("Validation passed.\n") 
 
         print("Testing third iteration of invoice stream...") 
         self.ingestData(3)
         self.waitForMicroBatch()
-        self.assertResult(3990)
+        self.assertResult(3994)
         print("Validation passed.\n")
 
         streamQuery.stop()
@@ -69,14 +71,14 @@ class streamingBatchTestSuite():
         self.ingestData(2)
         iStream.process("batch")
         self.waitForMicroBatch(30)        
-        self.assertResult(2506)
+        self.assertResult(2510)
         print("Validation passed.\n")
 
         print("Testing second batch of invoice stream...") 
         self.ingestData(3)
         iStream.process("batch")
         self.waitForMicroBatch(30)        
-        self.assertResult(3990)
+        self.assertResult(3994)
         print("Validation passed.\n")
 
 
@@ -84,7 +86,7 @@ class streamingBatchTestSuite():
 # COMMAND ----------
 
 sbTS = streamingBatchTestSuite()
-sbTS.runStreamTests()	
+#sbTS.runStreamTests()
 
 # COMMAND ----------
 

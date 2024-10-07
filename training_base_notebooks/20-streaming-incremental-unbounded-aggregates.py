@@ -1,7 +1,7 @@
 # Databricks notebook source
 class Bronze():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
+        self.base_data_dir =  "/FileStore/tables/boot_camp"
 
     def getSchema(self):
         return """InvoiceNumber string, CreatedTime bigint, StoreID string, PosID string, CashierID string,
@@ -39,7 +39,7 @@ class Bronze():
 
 class Gold():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
+        self.base_data_dir =  "/FileStore/tables/boot_camp"
         
     def readBronze(self):
         return spark.readStream.table("invoices_bz")

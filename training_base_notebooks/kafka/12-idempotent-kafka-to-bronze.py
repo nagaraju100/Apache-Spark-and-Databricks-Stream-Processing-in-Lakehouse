@@ -7,7 +7,7 @@
 
 class Bronze():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
+        self.base_data_dir = "/FileStore/tables/boot_camp"
         self.BOOTSTRAP_SERVER = "pkc-6ojv2.us-west4.gcp.confluent.cloud:9092"
         self.JAAS_MODULE = "org.apache.kafka.common.security.plain.PlainLoginModule"
         self.CLUSTER_API_KEY = "TQ7F373OG6J4TT4G"

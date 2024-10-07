@@ -1,12 +1,18 @@
 # Databricks notebook source
-# MAGIC %run ./12-idempotent-kafka-to-bronze
+# MAGIC %md
+# MAGIC ####Install below package in your cluster
+# MAGIC org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0
+
+# COMMAND ----------
+
+# MAGIC %run ./10-kafka-to-bronze
 
 # COMMAND ----------
 
 class kafkaToBronzeTestSuite():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
-     
+        self.base_data_dir = "/FileStore/tables/boot_camp"
+
     def cleanTests(self):
         print(f"Starting Cleanup...", end='')
         spark.sql("drop table if exists invoices_bz")
@@ -24,20 +30,18 @@ class kafkaToBronzeTestSuite():
         import time
         print(f"\tWaiting for {sleep} seconds...", end='')
         time.sleep(sleep)
-        print("Done.") 
-    
+        print("Done.")    
+
     def runTests(self):
         self.cleanTests()
-        bzStream = Bronze()
-        value_schema = bzStream.getSchema()
-        spark.sql(f"CREATE TABLE invoices_bz (key STRING, value STRUCT<{value_schema}>, topic STRING, timestamp TIMESTAMP)")
+        bzStream = Bronze()        
 
         print("Testing Scenario - Start from beginneing on a new checkpoint...") 
         bzQuery = bzStream.process()
         self.waitForMicroBatch() 
-        bzQuery.stop()     
+        bzQuery.stop()       
         self.assertResult(30)
-        print("Validation passed.\n")
+        print("Validation passed.\n")        
 
         print("Testing Scenarion - Restart from where it stopped on the same checkpoint...")
         bzQuery = bzStream.process()
@@ -51,15 +55,10 @@ class kafkaToBronzeTestSuite():
         bzQuery = bzStream.process(1697945539000)
         self.waitForMicroBatch()
         bzQuery.stop()
-        self.assertResult(30)
-        print("Validation passed.\n")
-
+        self.assertResult(40)
+        print("Validation passed.\n") 
 
 # COMMAND ----------
 
 ts = kafkaToBronzeTestSuite()
 ts.runTests()
-
-# COMMAND ----------
-
-

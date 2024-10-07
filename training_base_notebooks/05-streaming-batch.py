@@ -1,7 +1,7 @@
 # Databricks notebook source
 class invoiceStreamBatch():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
+        self.base_data_dir = "/FileStore/tables/boot_camp"
 
     def getSchema(self):
         return """InvoiceNumber string, CreatedTime bigint, StoreID string, PosID string, CashierID string,
@@ -43,7 +43,7 @@ class invoiceStreamBatch():
                     .format("delta")
                     .option("checkpointLocation", f"{self.base_data_dir}/chekpoint/invoices")
                     .outputMode("append")
-                    .option("maxFilesPerTrigger", 1)                    
+                    .option("maxFilesPerTrigger", 1)   ### ???                 
                 )
         
         if (trigger == "batch"):
