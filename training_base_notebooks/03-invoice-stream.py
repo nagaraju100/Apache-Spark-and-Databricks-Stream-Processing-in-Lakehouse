@@ -1,7 +1,7 @@
 # Databricks notebook source
-class invoiceStreamBatch():
+class invoiceStream():
     def __init__(self):
-        self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
+        self.base_data_dir = "/FileStore/tables/boot_camp"
 
     def getSchema(self):
         return """InvoiceNumber string, CreatedTime bigint, StoreID string, PosID string, CashierID string,
@@ -38,33 +38,19 @@ class invoiceStreamBatch():
                         .drop("LineItem")
                 )
         
-    def appendInvoices(self, flattenedDF, trigger = "batch"):
-        sQuery = (flattenedDF.writeStream
+    def appendInvoices(self, flattenedDF):
+        return (flattenedDF.writeStream
                     .format("delta")
                     .option("checkpointLocation", f"{self.base_data_dir}/chekpoint/invoices")
                     .outputMode("append")
-                    .option("maxFilesPerTrigger", 1)                    
-                )
-        
-        if (trigger == "batch"):
-            return ( sQuery.trigger(availableNow = True)
-                         .toTable("invoice_line_items"))
-        else:
-            return ( sQuery.trigger(processingTime = trigger)
-                         .toTable("invoice_line_items"))
+                    .toTable("invoice_line_items")
+        )
 
-    def process(self, trigger = "batch"):
+    def process(self):
            print(f"Starting Invoice Processing Stream...", end='')
            invoicesDF = self.readInvoices()
            explodedDF = self.explodeInvoices(invoicesDF)
            resultDF = self.flattenInvoices(explodedDF)
-           sQuery = self.appendInvoices(resultDF, trigger)
+           sQuery = self.appendInvoices(resultDF)
            print("Done\n")
            return sQuery     
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC &copy; 2021-2023 <a href="https://www.scholarnest.com/">ScholarNest Technologies Pvt. Ltd. </a>All rights reserved.<br/>
-# MAGIC <br/>
-# MAGIC <a href="https://www.scholarnest.com/privacy/">Privacy Policy</a> | <a href="https://www.scholarnest.com/terms/">Terms of Use</a> | <a href="https://www.scholarnest.com/contact-us/">Contact Us</a>

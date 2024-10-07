@@ -1,24 +1,20 @@
 # Databricks notebook source
-# MAGIC %run ./07-medallion-approach
+# MAGIC %run ./05-streaming-batch
 
 # COMMAND ----------
 
-class medallionApproachTestSuite():
+class streamingBatchTestSuite():
     def __init__(self):
         self.base_data_dir = "/FileStore/data_spark_streaming_scholarnest"
 
     def cleanTests(self):
         print(f"Starting Cleanup...", end='')
-        spark.sql("drop table if exists invoices_bz")
         spark.sql("drop table if exists invoice_line_items")
-        dbutils.fs.rm("/user/hive/warehouse/invoices_bz", True)
         dbutils.fs.rm("/user/hive/warehouse/invoice_line_items", True)
 
-        dbutils.fs.rm(f"{self.base_data_dir}/chekpoint/invoices_bz", True)
-        dbutils.fs.rm(f"{self.base_data_dir}/chekpoint/invoice_line_items", True)
-
-        dbutils.fs.rm(f"{self.base_data_dir}/data/invoices_archive", True)
+        dbutils.fs.rm(f"{self.base_data_dir}/chekpoint/invoices", True)
         dbutils.fs.rm(f"{self.base_data_dir}/data/invoices", True)
+
         dbutils.fs.mkdirs(f"{self.base_data_dir}/data/invoices")
         print("Done")
 
@@ -37,17 +33,14 @@ class medallionApproachTestSuite():
         import time
         print(f"\tWaiting for {sleep} seconds...", end='')
         time.sleep(sleep)
-        print("Done.")    
+        print("Done.")
 
-    def runTests(self):
+    def runStreamTests(self):
         self.cleanTests()
-        bzStream = Bronze()
-        bzQuery = bzStream.process()
+        iStream = invoiceStreamBatch()
+        streamQuery = iStream.process("30 seconds")
 
-        slStream = Silver()
-        slQuery = slStream.process()
-
-        print("\nTesting first iteration of invoice stream...") 
+        print("Testing first iteration of invoice stream...") 
         self.ingestData(1)
         self.waitForMicroBatch()        
         self.assertResult(1249)
@@ -65,23 +58,34 @@ class medallionApproachTestSuite():
         self.assertResult(3990)
         print("Validation passed.\n")
 
-        bzQuery.stop()
-        slQuery.stop()
+        streamQuery.stop()
 
-        print("Validating Archive...", end="") 
-        archives_expected = ["invoices_1.json", "invoices_2.json"]
-        for f in dbutils.fs.ls(f"{self.base_data_dir}/data/invoices_archive/{self.base_data_dir}/data/invoices"):
-            assert f.name in archives_expected, f"Archive Validation failed for {f.name}"
-        print("Done")
+    def runBatchTests(self):
+        self.cleanTests()
+        iStream = invoiceStreamBatch()
+
+        print("Testing first batch of invoice stream...") 
+        self.ingestData(1)
+        self.ingestData(2)
+        iStream.process("batch")
+        self.waitForMicroBatch(30)        
+        self.assertResult(2506)
+        print("Validation passed.\n")
+
+        print("Testing second batch of invoice stream...") 
+        self.ingestData(3)
+        iStream.process("batch")
+        self.waitForMicroBatch(30)        
+        self.assertResult(3990)
+        print("Validation passed.\n")
+
+
 
 # COMMAND ----------
 
-maTS = medallionApproachTestSuite()
-maTS.runTests()
+sbTS = streamingBatchTestSuite()
+sbTS.runStreamTests()	
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC &copy; 2021-2023 <a href="https://www.scholarnest.com/">ScholarNest Technologies Pvt. Ltd. </a>All rights reserved.<br/>
-# MAGIC <br/>
-# MAGIC <a href="https://www.scholarnest.com/privacy/">Privacy Policy</a> | <a href="https://www.scholarnest.com/terms/">Terms of Use</a> | <a href="https://www.scholarnest.com/contact-us/">Contact Us</a>
+sbTS.runBatchTests()

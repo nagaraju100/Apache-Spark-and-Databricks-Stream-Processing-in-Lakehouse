@@ -82,10 +82,3 @@ class Silver():
            sQuery = self.appendInvoices(resultDF)
            print("Done\n")
            return sQuery  
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC &copy; 2021-2023 <a href="https://www.scholarnest.com/">ScholarNest Technologies Pvt. Ltd. </a>All rights reserved.<br/>
-# MAGIC <br/>
-# MAGIC <a href="https://www.scholarnest.com/privacy/">Privacy Policy</a> | <a href="https://www.scholarnest.com/terms/">Terms of Use</a> | <a href="https://www.scholarnest.com/contact-us/">Contact Us</a>
