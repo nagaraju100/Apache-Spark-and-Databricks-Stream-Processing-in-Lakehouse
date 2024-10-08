@@ -34,7 +34,7 @@ class invoiceStreamWCTestSuite():
 
     def runTests(self):
         import time
-        sleepTime = 30
+        sleepTime = 300
 
         self.cleanTests()
         inStream = invoiceStream()

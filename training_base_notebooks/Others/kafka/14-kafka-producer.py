@@ -31,7 +31,8 @@ class KafkaProducer():
         return df.selectExpr(f"{key} as key", "to_json(struct(*)) as value")
     
     def sendToKafka(self, kafka_df):
-        return ( kafka_df.writeStream
+        return ( 
+                kafka_df.writeStream
                     .queryName("kafka-producer")
                     .format("kafka")
                     .option("kafka.bootstrap.servers", self.BOOTSTRAP_SERVER)

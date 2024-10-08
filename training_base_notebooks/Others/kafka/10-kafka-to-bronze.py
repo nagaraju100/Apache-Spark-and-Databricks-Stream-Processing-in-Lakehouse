@@ -19,7 +19,8 @@ class Bronze():
             """
 
     def ingestFromKafka(self, startingTime = 1):
-        return ( spark.readStream
+        return ( 
+                spark.readStream
                         .format("kafka")            
                         .option("kafka.bootstrap.servers", self.BOOTSTRAP_SERVER)
                         .option("kafka.security.protocol", "SASL_SSL")
@@ -29,6 +30,7 @@ class Bronze():
                         .option("maxOffsetsPerTrigger", 10)
                         .option("startingTimestamp", startingTime)
                         .load()
+                        
                 )
        
     
